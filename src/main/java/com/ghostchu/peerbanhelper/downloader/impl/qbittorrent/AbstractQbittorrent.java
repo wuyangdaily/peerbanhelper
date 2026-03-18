@@ -550,11 +550,17 @@ public abstract class AbstractQbittorrent extends AbstractDownloader {
 
             try (Response response = httpClient.newCall(request).execute()) {
                 if (!response.isSuccessful()) {
-                    throw new IllegalStateException(tlUI(Lang.DOWNLOADER_FAILED_REQUEST_STATISTICS, response.code(), response.body() != null ? response.body().string() : "null"));
+                    throw new IllegalStateException(tlUI(Lang.DOWNLOADER_FAILED_REQUEST_STATISTICS, getName(), response.body() != null ? response.body().string() : "null"));
                 }
                 String responseBody = response.body().string();
                 QBittorrentMainData mainData = JsonUtil.getGson().fromJson(responseBody, QBittorrentMainData.class);
-                return new DownloaderStatistics(mainData.getServerState().getAlltimeUl(), mainData.getServerState().getAlltimeDl());
+                var ul = mainData.getServerState().getAlltimeUl();
+                var dl = mainData.getServerState().getAlltimeDl();
+                if (ul == 0 && dl == 0) {
+                    // downloader maybe not ready
+                    throw new IllegalStateException(tlUI(Lang.DOWNLOADER_FAILED_REQUEST_STATISTICS, getName()));
+                }
+                return new DownloaderStatistics(ul, dl);
             }
         } catch (Exception e) {
             throw new IllegalStateException(e);
