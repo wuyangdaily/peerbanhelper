@@ -596,16 +596,6 @@ public abstract class AbstractQbittorrent extends AbstractDownloader {
                     if (s.contains(".onion") || s.contains(".i2p")) {
                         continue;
                     }
-                    // 一个 QB 本地化问题的 Workaround
-                    if (qbPeer.getPeerId() == null || "Unknown".equals(qbPeer.getPeerId()) || "未知".equals(qbPeer.getPeerId())) {
-                        qbPeer.setPeerIdClient("");
-                    }
-                    if (qbPeer.getClientName() != null) {
-                        if (qbPeer.getClientName().startsWith("Unknown [") && qbPeer.getClientName().endsWith("]")) {
-                            String mid = qbPeer.getClientName().substring("Unknown [".length(), qbPeer.getClientName().length() - 1);
-                            qbPeer.setClient(mid);
-                        }
-                    }
                     qbPeer.getPeerAddress().setRawIp(s);
                     qbPeer.setPeerAddress(natTranslate(qbPeer.getPeerAddress()));
 
